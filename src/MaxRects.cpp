@@ -195,6 +195,18 @@ namespace RBP {
 				return true;
 			});
 
+			// Remove rectangle if inside another rectangle
+
+			removePairwise(newRects, [](Rect& rect, Rect& other) {
+				if (rect.m_x != other.m_x || rect.m_y != other.m_y || rect.m_w != other.m_w || rect.m_h != other.m_h)
+					if (rect.m_x >= other.m_x && rect.m_y >= other.m_y &&
+						rect.m_x + rect.m_w <= other.m_x + other.m_w &&
+						rect.m_y + rect.m_h <= other.m_y + other.m_h)
+						return true;
+
+				return false;
+			});
+
 			newRects.remove_if([&bin](Rect& rect) {
 				for (auto& other : bin->m_freeRects)
 					if (rect.m_x >= other.m_x && rect.m_y >= other.m_y &&

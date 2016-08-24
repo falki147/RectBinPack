@@ -60,6 +60,30 @@ namespace RBP {
 			return (long long) x << 32 | y;
 		}
 
+		template<class T, class Pred> static inline void removePairwise(std::list<T>& list, Pred pred) {
+			for (auto rect = list.begin(); rect != list.end();) {
+				auto next = std::next(rect);
+
+				for (auto other = next; other != list.end();) {
+					if (pred(*rect, *other)) {
+						list.erase(rect);
+						break;
+					}
+
+					if (pred(*other, *rect)) {
+						if (other == next)
+							next = other = list.erase(other);
+						else
+							other = list.erase(other);
+					}
+					else
+						++other;
+				}
+
+				rect = next;
+			}
+		}
+
 		bool findBest(BinIt& outBin, RectIt& outFreeRect, RectDataIt& outRect, bool& flip);
 		unsigned long long getScore(const Rect& dest, unsigned int w, unsigned int h) const;
 		unsigned long long getScoreContactPoint(const std::vector<RectData*>& usedRects, unsigned int x, unsigned int y, unsigned int w, unsigned int h) const;
