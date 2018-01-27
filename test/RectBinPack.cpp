@@ -14,7 +14,7 @@ static std::vector<BinRect> prepareVector(unsigned int seed, unsigned int initia
 
 	for (auto i = 0u; i < 20; ++i)
 		rects.push_back({
-			{ 0, 0, rand() % 20, rand() % 20 },
+			{ 0, 0, (unsigned int) (rand() % 20), (unsigned int) (rand() % 20) },
 			initialBin, false
 		});
 
