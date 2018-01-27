@@ -1,4 +1,6 @@
-Rectangular Bin Packing Library
+[![Build status](https://ci.appveyor.com/api/projects/status/wog6f0mocvqysgta/branch/master?svg=true)](https://ci.appveyor.com/project/FlorianPreinfalk/rectbinpack/branch/master) [![Build Status](https://travis-ci.org/falki147/RectBinPack.svg?branch=master)](https://travis-ci.org/falki147/RectBinPack) [![codecov](https://codecov.io/gh/falki147/RectBinPack/branch/master/graph/badge.svg)](https://codecov.io/gh/falki147/RectBinPack)
+
+Rectangle Bin Packing Library
 =============================
 This library provides algorithms on how to pack rectangles into several bins. It currently contains the MaxRects and Guillotine algorithms. The project is based on the [survey](http://clb.demon.fi/files/RectangleBinPack.pdf) of [Jukka Jylänki](https://github.com/juj) and the [reference implementation](https://github.com/juj/RectangleBinPack) Possible applications are e.g. Texture Atlas Generators.
 
