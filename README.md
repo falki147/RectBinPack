@@ -12,7 +12,7 @@ Example
 -------
 Full example can be found in `src/Example.cpp`
 
-```
+```C++
 struct CustomRect { ... };
 
 // Template specialization for converting CustomRect to RectBinPack::Rect
