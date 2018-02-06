@@ -61,7 +61,7 @@ namespace RectBinPack {
 			 * \param end End iterator of the sequence
 			 * \param size Size of the sequence. Helps the internal vector determine the size, can be set to 0
 			 * \param config Configuration to use for packing
-			 * \throws std::runtime_error if the rectangle is too big to fit into any bin
+			 * \throws RectangleTooLargeError if the rectangle is too big to fit into any bin
 			 */
 			template<typename ItEnd>
 			Guillotine(It begin, ItEnd end, std::size_t size, const GuillotineConfiguration& config):
@@ -74,7 +74,7 @@ namespace RectBinPack {
 
 					if (rect.width > config.width || rect.height > config.height)
 						if (!config.canFlip || (rect.height > config.width || rect.width > config.height))
-							throw std::runtime_error("rectangle is too big");
+							throw RectangleTooLargeError("rectangle is too large");
 			
 					if (rect.width > 0 && rect.height > 0)
 						m_rects.push_back(it);

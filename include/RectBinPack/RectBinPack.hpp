@@ -6,8 +6,19 @@
 #pragma once
 
 #include <limits>
+#include <stdexcept>
 
 namespace RectBinPack {
+	/// Exception thrown by packing function when rectangle is larger then bin size
+	class RectangleTooLargeError: public std::runtime_error {
+	public:
+		explicit RectangleTooLargeError(const char* msg):
+			std::runtime_error(msg) { }
+			
+		explicit RectangleTooLargeError(std::string& msg):
+			std::runtime_error(msg) { }
+	};
+	
 	/// Represents a rectangle and consists of a position and a size
 	struct Rect {
 		/// Returns the left side of the rectangle (#x)
