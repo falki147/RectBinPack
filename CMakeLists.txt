@@ -1,11 +1,12 @@
 cmake_minimum_required(VERSION 3.5)
-project(RectBinPack VERSION 0.0.1 LANGUAGES CXX)
+project(RectBinPack VERSION 0.1.0 LANGUAGES CXX)
 
 if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 	option(ENABLE_COVERAGE "Enable coverage reporting for gcc/clang" OFF)
 endif()
 
 option(ENABLE_EXAMPLE "Enable example" ON)
+option(GENERATE_DOCS "Enable generating the documentation" OFF)
 
 set(GCC_COVERAGE_COMPILE_FLAGS -fprofile-arcs -ftest-coverage)
 set(GCC_COVERAGE_LINK_FLAGS "-lgcov --coverage")
@@ -35,6 +36,10 @@ endif()
 if(ENABLE_EXAMPLE)
 	add_executable(Example src/Example.cpp)
 	target_link_libraries(Example RectBinPack)
+endif()
+
+if(GENERATE_DOCS)
+  add_subdirectory(doc)
 endif()
 
 enable_testing()

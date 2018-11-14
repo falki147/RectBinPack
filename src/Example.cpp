@@ -16,24 +16,20 @@ struct CustomRect {
 	bool unpacked;
 };
 
-namespace RectBinPack {
-	// Template specialization for converting CustomRect to RectBinPack::Rect
-	template<>
-	Rect toRect<::CustomRect>(const ::CustomRect& value) {
-		return { value.x, value.y, value.w, value.h };
-	}
-	
-	// Template specialization for converting RectBinPack::BinRect to CustomRect
-	template<>
-	void fromBinRect<::CustomRect>(::CustomRect& value, BinRect rect) {
-		value.x = rect.rect.x;
-		value.y = rect.rect.y;
-		value.w = rect.rect.width;
-		value.h = rect.rect.height;
+// Conversion function from CustomRect to Rect
+inline RectBinPack::Rect toRect(const CustomRect& value) {
+	return {value.x, value.y, value.w, value.h};
+}
 
-		// If bin is not set, set rectangle to unpacked
-		value.unpacked = rect.bin == InvalidBin;
-	}
+// Conversion function from BinRect to CustomRect
+inline void fromBinRect(CustomRect& value, RectBinPack::BinRect rect) {
+	value.x = rect.rect.x;
+	value.y = rect.rect.y;
+	value.w = rect.rect.width;
+	value.h = rect.rect.height;
+
+	// If bin is not set, set rectangle to unpacked
+	value.unpacked = rect.bin == RectBinPack::InvalidBin;
 }
 
 int main() {

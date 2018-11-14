@@ -11,16 +11,21 @@
 #include <vector>
 
 namespace RectBinPack {
-	/// Heuristic for determining the best free space to put the rectangle into \relates MaxRectsConfiguration
+	/**
+	 * \addtogroup MaxRects
+	 * @{
+	 */
+
+	/// Heuristic for determining the best free space to put the rectangle into
 	enum class MaxRectsHeuristic {
-		BestShortSideFit,
-		BestLongSideFit,
-		BestAreaFit,
-		BottomLeftRule,
-		ContactPointRule
+		BestShortSideFit, ///< Use rect with the lowest shortest width or height of the remaining space
+		BestLongSideFit,  ///< Use rect with the lowest longest width or height of the remaining space
+		BestAreaFit,      ///< Use rect where the least space is left
+		BottomLeftRule,   ///< Use the most bottom left rectangle
+		ContactPointRule  ///< Use rect where the most sides are shared
 	};
 
-	/// Configuration for the packing function \relates packMaxRects
+	/// Configuration for the packing function
 	struct MaxRectsConfiguration {
 		unsigned int width; ///< Width of the bin
 		unsigned int height; ///< Height of the bin
@@ -55,7 +60,7 @@ namespace RectBinPack {
 				m_rects.reserve(size);
 
 				for (auto it = begin; it != end; ++it) {
-					const auto rect = toRect<Type>(*it);
+					const auto rect = toRect(*it);
 
 					if (rect.width > config.width || rect.height > config.height)
 						if (!config.canFlip || (rect.height > config.width || rect.width > config.height))
@@ -64,7 +69,7 @@ namespace RectBinPack {
 					if (rect.width > 0 && rect.height > 0)
 						m_rects.push_back(it);
 					else
-						fromBinRect<Type>(*it, { { 0, 0, 0, 0 }, InvalidBin, false });
+						fromBinRect(*it, { { 0, 0, 0, 0 }, InvalidBin, false });
 				}
 			}
 
@@ -86,8 +91,8 @@ namespace RectBinPack {
 					if (!findBest(findResult)) {
 						if (m_config.maxBins > 0 && m_bins.size() >= (unsigned int) m_config.maxBins) {
 							for (auto& rect : m_rects)
-								fromBinRect<Type>(*rect, {
-									toRect<Type>(*rect),
+								fromBinRect(*rect, {
+									toRect(*rect),
 									InvalidBin,
 									false
 								});
@@ -105,7 +110,7 @@ namespace RectBinPack {
 					const auto binIndex = (unsigned int) std::distance(m_bins.begin(), findResult.bin);
 					const auto& occupiedRect = findResult.occupiedRect;
 
-					fromBinRect<Type>(**findResult.rect, {
+					fromBinRect(**findResult.rect, {
 						occupiedRect,
 						binIndex,
 						findResult.flip
@@ -250,7 +255,7 @@ namespace RectBinPack {
 						auto& freeRect = *freeRectIt;
 
 						for (auto rectIt = m_rects.begin(); rectIt != m_rects.end(); ++rectIt) {
-							const auto rect = toRect<Type>(**rectIt);
+							const auto rect = toRect(**rectIt);
 
 							if (rect.width <= freeRect.width && rect.height <= freeRect.height) {
 								unsigned int score1, score2 = invalidScore;
@@ -290,7 +295,7 @@ namespace RectBinPack {
 				}
 
 				if (bestScore1 != invalidScore) {
-					const auto rect = toRect<Type>(**result.rect);
+					const auto rect = toRect(**result.rect);
 
 					const Rect occupiedRect {
 						result.freeRect->x,
@@ -315,12 +320,14 @@ namespace RectBinPack {
 	/**
 	 * \brief Packs rectangles using the %MaxRects algorithm
 	 *
-	 * Empty rectangles are always set to InvalidBin
+	 * The conversion to and from the rectangles uses functions to transform them into and from the internal types.
+	 * They are called toRect and fromBinRect. They have to be overloaded for each custom type. The index of empty
+	 * rectangles is always set to InvalidBin.
 	 *
 	 * \param config Configuration to use for packing
-	 * \param begin Begin iterator of the sequence
-	 * \param end End iterator of the sequence
-	 * \param size Size of the sequence. Helps the internal vector determine the size, can be set to 0
+	 * \param begin Begin iterator of the sequence of rectangles
+	 * \param end End iterator of the sequence of rectangles
+	 * \param size Size of the sequence. Helps the internal vector reserve enough space, can be set to 0
 	 * \returns If the packing suceeded and the number of used bins
 	 * \throws std::runtime_error if the rectangle is too big to fit into any bin
 	 */
@@ -333,7 +340,9 @@ namespace RectBinPack {
 	/**
 	 * \brief Packs rectangles using the %MaxRects algorithm
 	 *
-	 * Empty rectangles are always set to InvalidBin
+	 * The conversion to and from the rectangles uses functions to transform them into and from the internal types.
+	 * They are called toRect and fromBinRect. They have to be overloaded for each custom type. The index of empty
+	 * rectangles is always set to InvalidBin.
 	 *
 	 * \param config Configuration to use for packing
 	 * \param collection Collection of rectangles e.g. vector, list, array
@@ -344,4 +353,8 @@ namespace RectBinPack {
 	Result packMaxRects(const MaxRectsConfiguration& config, Collection& collection) {
 		return packMaxRects(config, std::begin(collection), std::end(collection), Internal::size(collection));
 	}
+
+	/**
+	 * @}
+	 */
 }

@@ -8,7 +8,7 @@ Features
 --------
 * C++ 11 support
 * Header only
-* Custom types using template specialization
+* Custom types
 
 Example
 -------
@@ -17,13 +17,11 @@ Full example can be found in `src/Example.cpp`
 ```C++
 struct CustomRect { ... };
 
-// Template specialization for converting CustomRect to RectBinPack::Rect
-template<>
-RectBinPack::Rect RectBinPack::toRect<CustomRect>(const CustomRect& value) { ... }
+// Conversion function from CustomRect to Rect
+inline RectBinPack::Rect toRect(const CustomRect& value) { ... }
 
-// Template specialization for converting RectBinPack::BinRect to CustomRect
-template<>
-void RectBinPack::fromBinRect<CustomRect>(CustomRect& value, RectBinPack::BinRect rect) { ... }
+// Conversion function from BinRect to CustomRect
+inline void fromBinRect(CustomRect& value, RectBinPack::BinRect rect) { ... }
 
 std::vector<CustomRect> data { ... };
 
@@ -38,4 +36,8 @@ RectBinPack::packMaxRects(config, data);
 
 Installation
 ------------
-Just copy and paste the include folder into your project (or add it to your include path)
+Just copy and paste the include folder into your project, add it to your include path or install it with CMake.
+
+Usage
+-----
+See `src/Example.cpp` or [Doxygen](https://www.preinfalk.co.at/projects/RectBinPack/index.html)

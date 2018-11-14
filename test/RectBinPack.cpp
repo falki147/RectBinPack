@@ -155,16 +155,16 @@ TEST_CASE("Vector Erase", "[Internal]") {
 TEST_CASE("To Rect", "[BinRect Conversion]") {
 	BinRect rect { { 1, 2, 3, 4 }, 0, false };
 
-	CHECK(toRect<BinRect>(rect).x == 1);
-	CHECK(toRect<BinRect>(rect).y == 2);
-	CHECK(toRect<BinRect>(rect).width == 3);
-	CHECK(toRect<BinRect>(rect).height == 4);
+	CHECK(toRect(rect).x == 1);
+	CHECK(toRect(rect).y == 2);
+	CHECK(toRect(rect).width == 3);
+	CHECK(toRect(rect).height == 4);
 }
 
 TEST_CASE("From BinRect", "[BinRect Conversion]") {
 	BinRect rect;
 
-	fromBinRect<BinRect>(rect, { { 1, 2, 3, 4 }, 5, true });
+	fromBinRect(rect, { { 1, 2, 3, 4 }, 5, true });
 
 	CHECK(rect.rect.x == 1);
 	CHECK(rect.rect.y == 2);
