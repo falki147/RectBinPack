@@ -11,34 +11,39 @@
 #include <vector>
 
 namespace RectBinPack {
-	/// Heuristic for determining the best free space to put the rectangle into \relates GuillotineConfiguration
+	/**
+	 * \addtogroup Guillotine
+	 * @{
+	 */
+
+	/// Heuristic for determining the best free space to put the rectangle into
 	enum class GuillotineRectHeuristic {
-		BestAreaFit,
-		BestShortSideFit,
-		BestLongSideFit,
-		WorstAreaFit,
-		WorstShortSideFit,
-		WorstLongSideFit
+		BestAreaFit,       ///< Use rect where the least space is left
+		BestShortSideFit,  ///< Use rect with the lowest shortest width or height of the remaining space
+		BestLongSideFit,   ///< Use rect with the lowest longest width or height of the remaining space
+		WorstAreaFit,      ///< Use rect where the most space is left
+		WorstShortSideFit, ///< Use rect with the highest shortest width or height of the remaining space
+		WorstLongSideFit   ///< Use rect with the highest longest width or height of the remaining space
 	};
 
-	/// Heuristic for determining the best axis to split the used free space \relates GuillotineConfiguration
+	/// Heuristic for determining the best axis to split the used free space
 	enum class GuillotineSplitHeuristic {
-		ShorterLeftoverAxis,
-		LongerLeftoverAxis,
-		MinimizeArea,
-		MaximizeArea,
-		ShorterAxis,
-		LongerAxis
+		ShorterLeftoverAxis, ///< Split rect by the shorter leftover axis
+		LongerLeftoverAxis,  ///< Split rect by the longer leftover axis
+		MinimizeArea,        ///< Split rect by the axis where the least area is left
+		MaximizeArea,        ///< Split rect by the axis where the most area is left
+		ShorterAxis,         ///< Split rect by the shorter axis
+		LongerAxis           ///< Split rect by the longer axis
 	};
 
-	/// Configuration for the packing function \relates packGuillotine
+	/// Configuration for the packing function
 	struct GuillotineConfiguration {
 		unsigned int width; ///< Width of the bin
 		unsigned int height; ///< Height of the bin
 		int minBins; ///< Minimum number of bins. Defaults to 1 if less then 1
 		int maxBins; ///< Maximum number of bins. Defaults to UnlimitedBins if less than 1
 		bool canFlip; ///< Allows for flipping of the rectangles
-		bool merge; ///< Enables merging. Free spaces that are side by side are merged.
+		bool merge; ///< Enables merging. Free spaces that can be represented by a bigger one are merged.
 		GuillotineRectHeuristic rectHeuristic; ///< Heuristic to use for finding a free space
 		GuillotineSplitHeuristic splitHeuristic; ///< Heuristic to use for splitting the free space
 	};
@@ -70,7 +75,7 @@ namespace RectBinPack {
 				m_rects.reserve(size);
 
 				for (auto it = begin; it != end; ++it) {
-					const auto rect = toRect<Type>(*it);
+					const auto rect = toRect(*it);
 
 					if (rect.width > config.width || rect.height > config.height)
 						if (!config.canFlip || (rect.height > config.width || rect.width > config.height))
@@ -79,7 +84,7 @@ namespace RectBinPack {
 					if (rect.width > 0 && rect.height > 0)
 						m_rects.push_back(it);
 					else
-						fromBinRect<Type>(*it, { { 0, 0, 0, 0 }, InvalidBin, false });
+						fromBinRect(*it, { { 0, 0, 0, 0 }, InvalidBin, false });
 				}
 			}
 
@@ -100,8 +105,8 @@ namespace RectBinPack {
 					if (!findBest(findResult)) {
 						if (m_config.maxBins > 0 && m_bins.size() >= (unsigned int) m_config.maxBins) {
 							for (auto& rect : m_rects)
-								fromBinRect<Type>(*rect, {
-									toRect<Type>(*rect),
+								fromBinRect(*rect, {
+									toRect(*rect),
 									InvalidBin,
 									false
 								});
@@ -119,7 +124,7 @@ namespace RectBinPack {
 					const auto binIndex = std::distance(m_bins.begin(), findResult.bin);
 					const auto& occupiedRect = findResult.occupiedRect;
 
-					fromBinRect<Type>(**findResult.rect, {
+					fromBinRect(**findResult.rect, {
 						occupiedRect,
 						(unsigned int) binIndex,
 						findResult.flip
@@ -245,7 +250,7 @@ namespace RectBinPack {
 						auto& freeRect = *freeRectIt;
 
 						for (auto rectIt = m_rects.begin(); rectIt != m_rects.end(); ++rectIt) {
-							const auto rect = toRect<Type>(**rectIt);
+							const auto rect = toRect(**rectIt);
 
 							// Check if rect fits perfectly in freeRect
 							if (rect.width == freeRect.width && rect.height == freeRect.height) {
@@ -281,7 +286,7 @@ namespace RectBinPack {
 				}
 
 				if (bestScore != invalidScore) {
-					const auto rect = toRect<Type>(**result.rect);
+					const auto rect = toRect(**result.rect);
 
 					const Rect occupiedRect {
 						result.freeRect->x,
@@ -335,12 +340,14 @@ namespace RectBinPack {
 	/**
 	 * \brief Packs rectangles using the %Guillotine algorithm
 	 *
-	 * Empty rectangles are always set to InvalidBin
+	 * The conversion to and from the rectangles uses functions to transform them into and from the internal types.
+	 * They are called toRect and fromBinRect. They have to be overloaded for each custom type. The index of empty
+	 * rectangles is always set to InvalidBin.
 	 *
 	 * \param config Configuration to use for packing
-	 * \param begin Begin iterator of the sequence
-	 * \param end End iterator of the sequence
-	 * \param size Size of the sequence. Helps the internal vector determine the size, can be set to 0
+	 * \param begin Begin iterator of the sequence of rectangles
+	 * \param end End iterator of the sequence of rectangles
+	 * \param size Size of the sequence. Helps the internal vector reserve enough space, can be set to 0
 	 * \returns If the packing suceeded and the number of used bins
 	 * \throws std::runtime_error if the rectangle is too big to fit into any bin
 	 */
@@ -353,7 +360,9 @@ namespace RectBinPack {
 	/**
 	 * \brief Packs rectangles using the %Guillotine algorithm
 	 *
-	 * Empty rectangles are always set to InvalidBin
+	 * The conversion to and from the rectangles uses functions to transform them into and from the internal types.
+	 * They are called toRect and fromBinRect. They have to be overloaded for each custom type. The index of empty
+	 * rectangles is always set to InvalidBin.
 	 *
 	 * \param config Configuration to use for packing
 	 * \param collection Collection of rectangles e.g. vector, list, array
@@ -364,4 +373,8 @@ namespace RectBinPack {
 	Result packGuillotine(const GuillotineConfiguration& config, Collection& collection) {
 		return packGuillotine(config, std::begin(collection), std::end(collection), Internal::size(collection));
 	}
+
+	/**
+	 * @}
+	 */
 }

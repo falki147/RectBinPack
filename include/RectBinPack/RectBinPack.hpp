@@ -12,9 +12,11 @@ namespace RectBinPack {
 	/// Exception thrown by packing function when rectangle is larger then bin size
 	class RectangleTooLargeError: public std::runtime_error {
 	public:
+		/// Construct from message string
 		explicit RectangleTooLargeError(const char* msg):
 			std::runtime_error(msg) { }
-			
+		
+		/// Construct from message string
 		explicit RectangleTooLargeError(std::string& msg):
 			std::runtime_error(msg) { }
 	};
@@ -78,7 +80,7 @@ namespace RectBinPack {
 	/// Contains a rectangle, bin number and a boolean for flipped rectangles
 	struct BinRect {
 		Rect rect; ///< Packed rectangle
-		unsigned int bin; ///< Number of bin starting with 0. If no bin is assigned it is InvalidBin.
+		unsigned int bin; ///< Number of bin starting with 0. It can be InvalidBin.
 		bool flipped; ///< Indicates if the rectangle was flipped or not.
 	};
 
@@ -94,38 +96,20 @@ namespace RectBinPack {
 		unsigned int numBins; ///< Number of bins used for packing
 	};
 
-	/**
-	 * \brief Generic convert function to convert from T to Rect
-	 *
-	 * Gets called a few times but never after fromBinRect was called on \p value
-	 */
-	template<typename T>
-	Rect toRect(const T& value);
-
-	/**
-	 * \brief Generic convert function to convert from BinRect to T
-	 *
-	 * Gets only called once
-	 */
-	template<typename T>
-	void fromBinRect(T& value, BinRect rect);
-
-	/// Template specialization for conversion \see toRect
-	template<>
-	Rect toRect<BinRect>(const BinRect& value) {
+	/// Conversion function from CustomRect to Rect
+	inline Rect toRect(const BinRect& value) {
 		return value.rect;
 	}
 
-	/// Template specialization for conversion \see fromBinRect
-	template<>
-	void fromBinRect<BinRect>(BinRect& value, BinRect rect) {
-		value = rect;
+	/// Conversion function from BinRect to BinRect
+	inline void fromBinRect(BinRect& dst, BinRect rect) {
+		dst = rect;
 	}
 
-	/// Value used for indicating if the bin index is valid or not \see BinRect
+	/// Value used for indicating an invalid bin index
 	const unsigned int InvalidBin = std::numeric_limits<unsigned int>::max();
 
-	/// Indicates if the maximum number of bins is irrelevant
+	/// Indicates if no maximum should be used
 	const int UnlimitedBins = -1;
 
 	/// \cond INTERNAL
